@@ -1,4 +1,4 @@
-package music;
+package main.music;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

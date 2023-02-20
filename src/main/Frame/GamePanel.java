@@ -1,51 +1,54 @@
 package main.Frame;
 
-import main.Frame.Note;
+import main.InputHandler;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class GamePanel extends JPanel {
+    private int noteSpeed;
+    private int noteSize;
+    private Color noteColor;
+    private List<Note> notes = new ArrayList<>();
+    private InputHandler inputHandler = new InputHandler();
 
-    private ArrayList<Note> notes;
-    private int score;
-
-    public GamePanel() {
-        notes = new ArrayList<>();
-        score = 0;
-        setBackground(Color.WHITE);
+    public GamePanel(int noteSpeed, int noteSize, Color noteColor) {
+        this.noteSpeed = noteSpeed;
+        this.noteSize = noteSize;
+        this.noteColor = noteColor;
+        setPreferredSize(new Dimension(640, 480));
+        setFocusable(true);
+        addKeyListener(inputHandler);
     }
 
-    public void addNote(Note note) {
+    public void addNote() {
+        int x = (int) (Math.random() * (getWidth() - noteSize));
+        Note note = new Note(x, -noteSize, noteSize, noteSpeed, noteColor);
         notes.add(note);
     }
 
-    public void removeNote(Note note) {
-        notes.remove(note);
-    }
-
-    public void update() {
-        Iterator<Note> it = notes.iterator();
-        while (it.hasNext()) {
-            Note note = it.next();
-            note.move();
-            if (note.getY() > getHeight()) {
-                it.remove();
-                score++;
+    public void removeNote() {
+        Iterator<Note> iterator = notes.iterator();
+        while (iterator.hasNext()) {
+            Note note = iterator.next();
+            if (note.isMissed()) {
+                iterator.remove();
             }
         }
-        repaint();
     }
 
-    public void paintComponent(Graphics g) {
+    @Override
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         for (Note note : notes) {
             note.draw(g);
         }
-        g.setColor(Color.BLACK);
-        g.drawString("Score: " + score, 10, 20);
     }
 
+    public boolean isKeyDown(int keyCode) {
+        return inputHandler.isKeyDown(keyCode);
+    }
 }
